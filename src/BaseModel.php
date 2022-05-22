@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 use Tinderbox\ClickhouseBuilder\Query\Enums\Operator;
 use Tinderbox\ClickhouseBuilder\Query\TwoElementsLogicExpression;
 
-class BaseModel
+class BaseModel extends Builder
 {
 
     use HasAttributes;
@@ -228,7 +228,7 @@ class BaseModel
      */
     public static function select($select = ['*'])
     {
-        return (new Builder)->select($select)->from((new static)->getTable());
+        return (new static)->select($select)->from((new static)->getTable());
     }
 
     /**
@@ -311,7 +311,7 @@ class BaseModel
     public static function where($column, $operator = null, $value = null, string $concatOperator = Operator::AND)
     {
         $static = new static;
-        $builder = (new Builder)->select(['*'])
+        $builder = (new static)->select(['*'])
             ->from($static->getTable())
             ->setSourcesTable($static->getTableSources());
         if (is_null($value)) {
@@ -330,7 +330,7 @@ class BaseModel
     public static function whereRaw(string $expression)
     {
         $static = new static;
-        return (new Builder)->select(['*'])
+        return (new static)->select(['*'])
             ->from($static->getTable())
             ->setSourcesTable($static->getTableSources())
             ->whereRaw($expression);
